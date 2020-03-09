@@ -63,19 +63,25 @@ getprocs()
   acquire(&ptable.lock);
   cprintf("PID \t Name \t UID \t GID \t PPID \t Elasped \t CPU \t State \t Size\n");
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      uint ppid;
-      char state[16];
-      if(p->parent)
-        ppid = p->parent->pid;
-      else
-        ppid = p->pid;
+      if( p->state != UNUSED && p->state != EMBRYO ){
+	      uint ppid;
+	      char state[16];
+	      if(p->parent)
+		ppid = p->parent->pid;
+	      else
+		ppid = p->pid;
 
-      if ( p->state == SLEEPING )
-        safestrcpy(state, "sleep", sizeof("sleep"));
-      else if ( p->state == RUNNING )
-        safestrcpy(state, "run", sizeof("run"));
-      
-      cprintf("%d \t %s \t %d \t %d \t %d \t %f \t %f \t %s \t %d\n", p->pid , p->name, p->g=uid, p->gid, ppid, (ticks - p->start_ticks) ,p->cpu_ticks_total, state, p->sz);
+	      if ( p->state == SLEEPING )
+		safestrcpy(state, "sleeping", sizeof(p->state));
+	      else if ( p->state == RUNNING )
+		safestrcpy(state, "running", sizeof(p->state));
+	      else if ( p->state == RUNNABLE )
+		safestrcpy(state, "runnable", sizeof(p->state));
+              else if ( p->state == ZOMBIE )
+		safestrcpy(state, "zombie", sizeof(p->state));
+	      
+	      cprintf("%d \t %s \t %d \t %d \t %d \t %f \t %f \t %s \t %d\n", p->pid , p->name, p->g=uid, p->gid, ppid, (ticks - p->start_ticks) ,p->cpu_ticks_total, state, p->sz);
+      }
   }
   
   release(&ptable.lock);
