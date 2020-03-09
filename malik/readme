@@ -1,1 +1,21 @@
 File for malik contributions
+
+Added #define SYS_getprocs 24 in the syscall.h
+Added int getprocs (void); in the defs.h
+Added int getprocs(void); in user.h
+Added sys_getprocs funtion in sysproc.c
+Added SYSCALL(getprocs) in usys.S
+Added extern int sys_getprocs(void); in syscall.c
+Added getprocs function in proc.c
+Added and called get_procs funciton in ps.c
+
+This command is used to find out information regarding active processes in the system.
+We define “active" here to be a process in the RUNNABLE, SLEEPING, RUNNING, or 
+ZOMBIE state.
+
+Example:
+$ ps
+PID  Name  UID  GID  PPID  Elapsed  CPU  State  Size
+1    init   0    0    1     2.549  0.033 sleep 12288
+2    sh     0    0    1     2.513  0.018 sleep 16384
+3    ps     0    0    2     0.022  0.011 run 49152
