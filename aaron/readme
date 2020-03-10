@@ -1,6 +1,35 @@
-folder for aaron to contribute
+folder for aaron to contribute- PART A
 
 
+Added #define SYS_date   23 in syscall.h
+Added date prototype to user.h
+Implemented sys date function in sysproc.c
+Added date system call to usys.S
+Added sys_date declaration and mapping to syscall.c
+Created dated.c to invoke date command
 
 
-a
+This command gets the current UTC time and displays it to the invoking user program. 
+The time is in UTC format, so to convert to the local hour -7 from the UTC  hour.
+This command uses date.c to invoke the command at the shell prompt. The displayed time is 
+in the format
+	month/day/year  hour/minute, seconds 
+
+EXAMPLE RUN: 
+SeaBIOS (version 1.12.0-2.fc30)
+
+
+iPXE (http://ipxe.org) 00:03.0 C980 PCI2.10 PnP PMM+1FF91280+1FED1280 C980
+                                                                               
+
+
+Booting from Hard Disk..xv6...
+cpu1: starting 1
+cpu0: starting 0
+sb: size 1000 nblocks 941 ninodes 200 nlog 30 logstart 2 inodestart 32 bmap start 58
+init: starting sh
+$ date
+10/3/2020 19:16:21
+$ date
+10/3/2020 19:16:30
+$ 
