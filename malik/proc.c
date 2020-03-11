@@ -6,6 +6,7 @@
 #include "x86.h"
 #include "proc.h"
 #include "spinlock.h"
+#include "procs.h"
 
 struct {
   struct spinlock lock;
@@ -52,10 +53,11 @@ cps()
 
 //current process status
 int
-getprocs()
+getprocs(struct procs* table)
 {
   struct proc *p;
   char *state;
+  int proc_count = 0;
   static char *states[] = {
   [UNUSED]    "unused",
   [EMBRYO]    "embryo",
@@ -70,27 +72,31 @@ getprocs()
 
   // Loop over process table looking for process with pid.
   acquire(&ptable.lock);
-  cprintf("PID \t Name \t UID \t GID \t PPID \t Elasped \t CPU \t State \t Size\n");
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       if( p->state != UNUSED && p->state != EMBRYO ){
-	      uint ppid;
-	      if(p->parent)
-		      ppid = p->parent->pid;
-	      else
-		      ppid = p->pid;
-
-	      if(p->state >= 0 && p->state < NELEM(states) && states[p->state])
+	if(p->state >= 0 && p->state < NELEM(states) && states[p->state])
           state = states[p->state];
         else
           state = "???";
+        state = states[p->state];
 	      
-	      cprintf("%d \t %s \t %d \t %d \t %d \t %f \t %f \t %s \t %d\n", p->pid , p->name, p->uid, p->gid, ppid, (ticks - p->start_ticks) ,p->cpu_ticks_total, state, p->sz);
+        table[proc_count].pid = p->pid;
+        table[proc_count].uid = p->uid;
+        table[proc_count].gid = p->gid;
+        table[proc_count].ppid = p->parent ? p->parent->pid : p->pid;
+        table[proc_count].elapsed_ticks = ticks - p->start_ticks;
+        table[proc_count].CPU_total_ticks = p->cpu_ticks_total;
+        table[proc_count].size = p->sz;
+	safestrcpy(table[proc_count].name, p->name, sizeof(table[proc_count].name));
+	safestrcpy(table[proc_count].state, state, sizeof(table[proc_count].state));
+        proc_count++;
       }
+      
   }
   
   release(&ptable.lock);
   
-  return 24;
+  return proc_count;
 }
 
 //total running and sleeping process count
@@ -167,6 +173,7 @@ static struct proc*
 allocproc(void)
 {
   struct proc *p;
+  struct proc *curproc = myproc();
   char *sp;
 
   acquire(&ptable.lock);
@@ -184,8 +191,8 @@ found:
   	p->uid=0; 
   	p->gid=0;
   }else{
-  	p->uid = proc->uid;
-  	p->gid = proc->gid;
+  	p->uid = curproc->uid;
+  	p->gid = curproc->gid;
   } 
 
   p->state = EMBRYO;
@@ -482,7 +489,7 @@ sched(void)
   if(readeflags()&FL_IF)
     panic("sched interruptible");
   intena = mycpu()->intena;
-  proc->cpu_ticks_total += (ticks - proc->cpu_ticks_in);
+  p->cpu_ticks_total += (ticks - p->cpu_ticks_in);
   swtch(&p->context, mycpu()->scheduler);
   mycpu()->intena = intena;
 }
@@ -634,8 +641,28 @@ procdump(void)
 	  if(p->parent)
 		  ppid = p->parent->pid;
 	  else
-		  ppid = p->pid;  
-    cprintf("%d \t %s \t %d \t %d \t %d \t %f \t %f \t %s \t %d\n", p->pid , p->name, p->uid, p->gid, ppid, (ticks - p->start_ticks) ,p->cpu_ticks_total, state, p->sz);
+		  ppid = p->pid;
+    uint elapsed_time_ms = p->start_ticks;
+    uint elapsed_time_s = elapsed_time_ms/1000;
+    elapsed_time_ms = elapsed_time_ms % 1000;
+    char* zeros = "";
+    if(elapsed_time_ms < 100 && elapsed_time_ms >= 10){
+      zeros = "0";
+    }
+    if(elapsed_time_ms < 10){
+      zeros = "00";
+    }
+    uint cpu_time_ms = p->cpu_ticks_total;
+    uint cpu_time_s = cpu_time_ms/1000;
+    cpu_time_ms = cpu_time_ms % 1000;
+    char* cpu_zeros = "";
+    if(cpu_time_ms < 100 && cpu_time_ms >= 10){
+      cpu_zeros = "0";
+    }
+    if(cpu_time_ms < 10){
+      cpu_zeros = "00";
+    } 
+    cprintf("%d \t %s \t %d \t %d \t %d \t %d.%s%d \t %d.%s%d \t %s \t %d\n", p->pid , p->name, p->uid, p->gid, ppid,elapsed_time_s,zeros,elapsed_time_ms,cpu_time_s,cpu_zeros,cpu_time_ms, state, p->sz);
     if(p->state == SLEEPING){
       getcallerpcs((uint*)p->context->ebp+2, pc);
       for(i=0; i<10 && pc[i] != 0; i++)

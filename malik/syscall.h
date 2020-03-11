@@ -22,6 +22,11 @@
 #define SYS_close  21
 #define SYS_cps    22
 #define SYS_nps    25
+#define SYS_getuid    26
+#define SYS_getgid   27
+#define SYS_getppid   28
+#define SYS_setuid    29
+#define SYS_setgid    30
 ////////added by Aaron///////////////////
 #define SYS_date   23
 #define SYS_getprocs 24

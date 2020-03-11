@@ -6,6 +6,7 @@
 #include "memlayout.h"
 #include "mmu.h"
 #include "proc.h"
+#include "procs.h"
 
 int
 sys_cps(void)
@@ -22,7 +23,12 @@ sys_nps(void)
 int
 sys_getprocs(void)
 {
-  return getprocs();
+  struct procs* table;
+  if(argptr(0, (void*)&table, sizeof(struct procs)) < 0){
+    return -1;
+  }
+  int num_procs = getprocs(table);
+  return num_procs;
 }
 
 

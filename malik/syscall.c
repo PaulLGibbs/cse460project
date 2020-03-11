@@ -140,7 +140,7 @@ static int (*syscalls[])(void) = {
 [SYS_nps]     sys_nps,
 [SYS_getuid]  sys_getuid,
 [SYS_getgid]  sys_getgid,
-[SYS_getgid]  sys_getppid,
+[SYS_getppid] sys_getppid,
 [SYS_setuid]  sys_setuid,
 [SYS_setgid]  sys_setgid,
 /////////////Added by Aaron//////////////////////////////

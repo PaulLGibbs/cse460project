@@ -1,3 +1,4 @@
+#include "procs.h"
 struct stat;
 struct rtcdate;
 
@@ -32,7 +33,7 @@ int setuid(uint);
 int setgid(uint);
 //////////added by Aaron//////////////////
 int date(struct rtcdate*);
-int getprocs(void);
+int getprocs(struct procs* table);
 
 // ulib.c
 int stat(char*, struct stat*);
