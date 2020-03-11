@@ -61,6 +61,45 @@ sys_getpid(void)
   return myproc()->pid;
 }
 
+//Daniel Firestone #3
+uint
+sys_getuid(void)
+{
+  return myproc()->uid;
+}
+
+uint
+sys_getgid(void)
+{
+  return myproc()->gid;
+}
+
+uint
+sys_getppid(void)
+{
+  return myproc()->parent->uid;
+}
+
+int
+sys_setuid(uint id)
+{
+	if (id < 0 || id > 32767)
+		return -1;
+	else 
+		myproc()->uid = id;
+	return 0;
+}
+
+int
+sys_setgid(uint id)
+{
+	if (id < 0 || id > 32767)
+		return -1;
+	else 
+		myproc()->gid = id;
+	return 0;
+}
+
 int
 sys_sbrk(void)
 {
@@ -107,4 +146,15 @@ sys_uptime(void)
   xticks = ticks;
   release(&tickslock);
   return xticks;
+}
+
+///////////////added by Aaron/////////////////////////////////////
+int
+sys_date(void)
+{
+    struct rtcdate *d;
+    if(argptr(0, (void*)&d, sizeof(struct rtcdate)) < 0)
+        return -1;
+    cmostime(d);
+    return 0;
 }

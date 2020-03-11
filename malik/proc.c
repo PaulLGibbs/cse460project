@@ -55,7 +55,16 @@ int
 getprocs()
 {
   struct proc *p;
-  
+  char *state;
+  static char *states[] = {
+  [UNUSED]    "unused",
+  [EMBRYO]    "embryo",
+  [SLEEPING]  "sleep ",
+  [RUNNABLE]  "runble",
+  [RUNNING]   "run   ",
+  [ZOMBIE]    "zombie"
+  };
+
   // Enable interrupts on this processor.
   sti();
 
@@ -65,22 +74,17 @@ getprocs()
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       if( p->state != UNUSED && p->state != EMBRYO ){
 	      uint ppid;
-	      char state[16];
 	      if(p->parent)
-		ppid = p->parent->pid;
+		      ppid = p->parent->pid;
 	      else
-		ppid = p->pid;
+		      ppid = p->pid;
 
-	      if ( p->state == SLEEPING )
-		safestrcpy(state, "sleeping", sizeof(p->state));
-	      else if ( p->state == RUNNING )
-		safestrcpy(state, "running", sizeof(p->state));
-	      else if ( p->state == RUNNABLE )
-		safestrcpy(state, "runnable", sizeof(p->state));
-              else if ( p->state == ZOMBIE )
-		safestrcpy(state, "zombie", sizeof(p->state));
+	      if(p->state >= 0 && p->state < NELEM(states) && states[p->state])
+          state = states[p->state];
+        else
+          state = "???";
 	      
-	      cprintf("%d \t %s \t %d \t %d \t %d \t %f \t %f \t %s \t %d\n", p->pid , p->name, p->g=uid, p->gid, ppid, (ticks - p->start_ticks) ,p->cpu_ticks_total, state, p->sz);
+	      cprintf("%d \t %s \t %d \t %d \t %d \t %f \t %f \t %s \t %d\n", p->pid , p->name, p->uid, p->gid, ppid, (ticks - p->start_ticks) ,p->cpu_ticks_total, state, p->sz);
       }
   }
   
@@ -209,6 +213,9 @@ found:
   p->context = (struct context*)sp;
   memset(p->context, 0, sizeof *p->context);
   p->context->eip = (uint)forkret;
+
+  p->start_ticks = ticks;   //know process age
+  p->cpu_ticks_total = 0;
 
   return p;
 }
@@ -440,7 +447,7 @@ scheduler(void)
       c->proc = p;
       switchuvm(p);
       p->state = RUNNING;
-
+      p->cpu_ticks_in = ticks;
       swtch(&(c->scheduler), p->context);
       switchkvm();
 
@@ -475,6 +482,7 @@ sched(void)
   if(readeflags()&FL_IF)
     panic("sched interruptible");
   intena = mycpu()->intena;
+  proc->cpu_ticks_total += (ticks - proc->cpu_ticks_in);
   swtch(&p->context, mycpu()->scheduler);
   mycpu()->intena = intena;
 }
@@ -598,6 +606,7 @@ kill(int pid)
 // Print a process listing to console.  For debugging.
 // Runs when user types ^P on console.
 // No lock to avoid wedging a stuck machine further.
+//Daniel Firestone
 void
 procdump(void)
 {
@@ -613,7 +622,7 @@ procdump(void)
   struct proc *p;
   char *state;
   uint pc[10];
-
+  cprintf("PID \t Name \t UID \t GID \t PPID \t Elasped \t CPU \t State \t Size \t PCs\n");
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
     if(p->state == UNUSED)
       continue;
@@ -621,7 +630,12 @@ procdump(void)
       state = states[p->state];
     else
       state = "???";
-    cprintf("%d %s %s", p->pid, state, p->name);
+    uint ppid;
+	  if(p->parent)
+		  ppid = p->parent->pid;
+	  else
+		  ppid = p->pid;  
+    cprintf("%d \t %s \t %d \t %d \t %d \t %f \t %f \t %s \t %d\n", p->pid , p->name, p->uid, p->gid, ppid, (ticks - p->start_ticks) ,p->cpu_ticks_total, state, p->sz);
     if(p->state == SLEEPING){
       getcallerpcs((uint*)p->context->ebp+2, pc);
       for(i=0; i<10 && pc[i] != 0; i++)

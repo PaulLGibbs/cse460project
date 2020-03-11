@@ -25,6 +25,13 @@ int sleep(int);
 int uptime(void);
 int cps(void);
 int nps(void);
+uint getuid(void);
+uint getgid(void);
+uint getppid(void);
+int setuid(uint);
+int setgid(uint);
+//////////added by Aaron//////////////////
+int date(struct rtcdate*);
 int getprocs(void);
 
 // ulib.c
