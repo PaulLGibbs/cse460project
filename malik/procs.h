@@ -12,5 +12,4 @@ struct procs
   char state[STRMAX];
   uint size;
   char name[STRMAX];
-  uint priority;
 };
