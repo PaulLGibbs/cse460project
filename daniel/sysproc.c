@@ -132,3 +132,22 @@ sys_uptime(void)
 }
 
 
+//#5 system calls
+int
+sys_chmod(void)
+{
+	return chmod();
+}
+
+int
+sys_chown(void)
+{
+	return chown();
+}
+
+int
+sys_chgrp(void)
+{
+	return chgrp();
+}
+

@@ -195,3 +195,8 @@ uint			getgid(void);
 uint			getppid(void);
 int				setuid(uint);
 int				setgid(uint);
+
+//#5
+int chmod(char *pathname, int mode);
+int chown(char *pathname, int owner);
+int chgrp(char *pathname, int group);

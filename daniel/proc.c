@@ -606,3 +606,20 @@ getppid(void)
 	}
 }
 
+int chmod(char *pathname, int mode)
+{
+
+	return 0
+}
+
+int chown(char *pathname, int owner)
+{
+
+	return 0
+}
+
+int chgrp(char *pathname, int group)
+{
+
+	return 0
+}
