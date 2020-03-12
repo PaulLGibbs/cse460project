@@ -629,7 +629,7 @@ procdump(void)
   struct proc *p;
   char *state;
   uint pc[10];
-  cprintf("PID \t Name \t UID \t GID \t PPID \t Elasped \t CPU \t State \t Size \t PCs\n");
+  cprintf("PID \t Name \t UID \t GID \t PPID \t Elapsed \t CPU \t State \t Size \t PCs\n");
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
     if(p->state == UNUSED)
       continue;
@@ -662,7 +662,7 @@ procdump(void)
     if(cpu_time_ms < 10){
       cpu_zeros = "00";
     } 
-    cprintf("%d \t %s \t %d \t %d \t %d \t %d.%s%d \t %d.%s%d \t %s \t %d\n", p->pid , p->name, p->uid, p->gid, ppid,elapsed_time_s,zeros,elapsed_time_ms,cpu_time_s,cpu_zeros,cpu_time_ms, state, p->sz);
+    cprintf("%d \t %s \t %d \t %d \t %d \t %d.%s%d \t %d.%s%d \t %s \t %d \t", p->pid , p->name, p->uid, p->gid, ppid,elapsed_time_s,zeros,elapsed_time_ms,cpu_time_s,cpu_zeros,cpu_time_ms, state, p->sz);
     if(p->state == SLEEPING){
       getcallerpcs((uint*)p->context->ebp+2, pc);
       for(i=0; i<10 && pc[i] != 0; i++)

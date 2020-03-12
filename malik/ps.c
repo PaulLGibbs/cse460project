@@ -11,7 +11,7 @@ main(int argc, char *argv[])
 
   int num_procs = getprocs(proc);
 
-  printf(1,"PID \t Name \t UID \t GID \t PPID \t Elasped \t CPU \t State \t Size\n");
+  printf(1,"PID \t Name \t UID \t GID \t PPID \t Elapsed \t CPU \t State \t Size\n");
   int i;
   for(i = 0; i<num_procs;i++){
     uint elapsed_time_ms = proc[i].elapsed_ticks;
