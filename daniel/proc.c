@@ -203,6 +203,8 @@ fork(void)
   np->sz = curproc->sz;
   np->parent = curproc;
   *np->tf = *curproc->tf;
+  np->uid = curproc->uid;
+  np->gid = curproc->gid;
 
   // Clear %eax so that fork returns 0 in the child.
   np->tf->eax = 0;
@@ -537,4 +539,87 @@ procdump(void)
     }
     cprintf("\n");
   }
+}
+
+int
+setuid(uint uid)
+{
+	struct proc *p = myproc();
+	acquire(&ptable.lock);
+	p->uid = uid;
+	release(&ptable.lock);
+	return uid;
+}
+
+int
+setgid(uint gid)
+{
+	struct proc *p = myproc();
+	acquire(&ptable.lock);
+	p->gid = gid;
+	release(&ptable.lock);
+	return gid;
+}
+
+
+uint
+getuid(void)
+{
+	struct proc *p = myproc();
+	acquire(&ptable.lock);
+	int u = 0;
+	u = p->uid;
+	cprintf("getuid \n");
+	release(&ptable.lock);
+	return u;
+}
+
+uint
+getgid(void)
+{
+	struct proc *p = myproc();
+	acquire(&ptable.lock);
+	int g = 0;
+	g = p->gid;
+	cprintf("getgid \n");
+	release(&ptable.lock);
+	return g;
+}
+
+uint
+getppid(void)
+{
+	struct proc *p = myproc();
+	acquire(&ptable.lock);
+	int pp = 0;
+	if (p->parent->uid < 0)
+	{	
+		cprintf("Parent ID invalid.\n");
+		return -1;
+	}
+	else
+	{	
+		pp = p->parent->uid;
+		cprintf("getppid \n");
+		release(&ptable.lock);
+		return pp;
+	}
+}
+
+int chmod(char *pathname, int mode)
+{
+
+	return 0
+}
+
+int chown(char *pathname, int owner)
+{
+
+	return 0
+}
+
+int chgrp(char *pathname, int group)
+{
+
+	return 0
 }

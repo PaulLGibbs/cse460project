@@ -28,6 +28,9 @@ uint getgid(void);
 uint getppid(void);
 int setuid(uint);
 int setgid(uint);
+int chmod(char*, int);
+int chown(char*, int);
+int chgrp(char*, int);
 
 // ulib.c
 int stat(char*, struct stat*);

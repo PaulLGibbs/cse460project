@@ -42,43 +42,46 @@ sys_getpid(void)
   return myproc()->pid;
 }
 //Daniel Firestone #3
-uint
+int
 sys_getuid(void)
 {
-  return myproc()->uid;
+  return getuid();
 }
 
-uint
+int
 sys_getgid(void)
 {
-  return myproc()->gid;
+  return getgid();
 }
 
-uint
+int
 sys_getppid(void)
 {
-  return myproc()->parent->uid;
+  return getppid();
 }
 
 int
-sys_setuid(uint id)
+sys_setuid(void)
 {
-	if (id < 0 || id > 32767)
-		return -1;
-	else 
-		myproc()->uid = id;
+	int uid;
+	if(argint(0,&uid) < 0 || argint(0,&uid) > 32767)
+		return -1;	
+	else
+		setuid(uid);
 	return 0;
 }
 
 int
-sys_setgid(uint id)
+sys_setgid(void)
 {
-	if (id < 0 || id > 32767)
-		return -1;
-	else 
-		myproc()->gid = id;
+	int gid;
+	if(argint(0,&gid) < 0 || argint(0,&gid) > 32767)
+		return -1;	
+	else
+		setgid(gid);
 	return 0;
 }
+
 
 int
 sys_sbrk(void)
@@ -128,4 +131,23 @@ sys_uptime(void)
   return xticks;
 }
 
+
+//#5 system calls
+int
+sys_chmod(void)
+{
+	return chmod();
+}
+
+int
+sys_chown(void)
+{
+	return chown();
+}
+
+int
+sys_chgrp(void)
+{
+	return chgrp();
+}
 
