@@ -254,6 +254,10 @@ userinit(void)
   safestrcpy(p->name, "initcode", sizeof(p->name));
   p->cwd = namei("/");
 
+  p->parent = 0;
+  p->uid = 0;
+  p->gid = 0;
+
   // this assignment to p->state lets other cores
   // run this process. the acquire forces the above
   // writes to be visible, and the lock is also needed
@@ -310,6 +314,8 @@ fork(void)
   }
   np->sz = curproc->sz;
   np->parent = curproc;
+  np->uid = curproc->uid;
+  np->gid = curproc->gid;
   *np->tf = *curproc->tf;
 
   // Clear %eax so that fork returns 0 in the child.

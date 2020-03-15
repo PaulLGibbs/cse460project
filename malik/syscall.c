@@ -113,6 +113,9 @@ extern int sys_nps(void);
 ///////////Added by Aaron///////////////////////////
 extern int sys_date(void);
 extern int sys_getprocs(void);
+extern int sys_chmod(void);
+extern int sys_chown(void);
+extern int sys_chgrp(void);
 
 static int (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
@@ -146,6 +149,9 @@ static int (*syscalls[])(void) = {
 /////////////Added by Aaron//////////////////////////////
 [SYS_date]    sys_date,
 [SYS_getprocs]     sys_getprocs,
+[SYS_chmod]   sys_chmod,
+[SYS_chown]   sys_chown,
+[SYS_chgrp]   sys_chgrp,
 };
 
 void

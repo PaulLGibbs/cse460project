@@ -30,4 +30,7 @@
 ////////added by Aaron///////////////////
 #define SYS_date   23
 #define SYS_getprocs 24
+#define SYS_chmod   31
+#define SYS_chown   32
+#define SYS_chgrp   33
 

@@ -125,6 +125,9 @@ void            yield(void);
 int             cps (void);
 int             nps (void);
 int             getprocs (struct procs* table);
+int             chmod(struct inode*, int);
+int             chown(struct inode*, int);
+int             chgrp(struct inode*, int);
 
 // swtch.S
 void            swtch(struct context**, struct context*);

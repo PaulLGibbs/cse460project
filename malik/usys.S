@@ -39,3 +39,6 @@ SYSCALL(setgid)
 /////////Added by Aaron/////////////////////////
 SYSCALL(date)
 SYSCALL(getprocs)
+SYSCALL(chmod)
+SYSCALL(chown)
+SYSCALL(chgrp)

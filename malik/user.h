@@ -34,6 +34,9 @@ int setgid(uint);
 //////////added by Aaron//////////////////
 int date(struct rtcdate*);
 int getprocs(struct procs* table);
+int chmod(char *pathname, int mode);
+int chown(char *pathname, int owner);
+int chgrp(char *pathname, int group);
 
 // ulib.c
 int stat(char*, struct stat*);
@@ -48,3 +51,4 @@ void* memset(void*, int, uint);
 void* malloc(uint);
 void free(void*);
 int atoi(const char*);
+int atoo(const char*);
